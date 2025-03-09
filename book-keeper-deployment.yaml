@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-keeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-keeper
+  template:
+    metadata:
+      labels:
+        app: book-keeper
+    spec:
+      containers:
+      - name: book-keeper
+        image: akshaytembhekar/bookkeeper-api:latest
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: "docker"
+          - name: SPRING_DATASOURCE_URL
+            value: "jdbc:postgresql://bookmarker-db:5432/appdb"
+          - name: SPRING_DATASOURCE_USERNAME
+            value: "postgres"
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: "postgres"
+        ports:
+          - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-keeper
+spec:
+  type: NodePort
+  ports:
+    - port: 8081
+  selector:
+    app: book-keeper
